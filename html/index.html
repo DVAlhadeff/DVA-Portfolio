@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>Daniel V Alhadeff, portfolio and CV</title>
+        <!--link rel="stylesheet" href="../theme/default/style.css" type="text/css"-->
+        <script src="script/OpenLayers.js"></script>
+        
+		<link rel="stylesheet" href="css/portfolio_style.css" type="text/css"></link>
+        <script type="text/javascript">
+		var lastItem = null;
+		
+		function clickNotice(e) {
+			console.debug(e);
+			console.debug(e.attributes);
+			lastItem = e;
+		}
+		
+            var map;
+            function init(){
+/*
+                map = new OpenLayers.Map('map');
+
+                var ol_wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+                    "http://vmap0.tiles.osgeo.org/wms/vmap0?", {layers: 'basic'},
+                    {'attribution': 'Provided by OSGeo'});
+
+                var jpl_wms = new OpenLayers.Layer.WMS( "NASA Global Mosaic",
+                    "http://t1.hypercube.telascience.org/cgi-bin/landsat7", 
+                    {layers: "landsat7"},{attribution:"Provided by Telascience"});
+
+                var vector = new OpenLayers.Layer.Vector("Simple Geometry",
+                              {attribution:"Vector Attibution in 2nd arg"});
+
+                //map.addLayers([ol_wms, jpl_wms, vector]);
+
+                map.addControl(new OpenLayers.Control.LayerSwitcher());
+                // OpenLayers.Control.Attribution is one of the default
+                // controls - only needs to be added when the map instance is
+                // created with the controls option
+                //map.addControl(new OpenLayers.Control.Attribution());
+                map.zoomToMaxExtent();
+*/
+    map = new OpenLayers.Map("map");
+    map.addLayer(new OpenLayers.Layer.OSM());
+       
+    var pois = new OpenLayers.Layer.Vector("KML", {
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: "DVAPortfolio.kml",
+                format: new OpenLayers.Format.KML({
+                    extractStyles: true,
+                    extractAttributes: true,
+                    maxDepth: 2
+                })
+            })
+        });
+    map.addLayer(pois);
+	
+	selectFeature = new OpenLayers.Control.SelectFeature(
+    pois,
+    {
+        onSelect: clickNotice,
+        autoActivate: true
+    }
+);
+map.addControl(selectFeature);
+
+    
+    //Set start centrepoint and zoom
+    //TODO: Is it possible to just zoom to extents of defined markers instead?
+    
+    var lonLat = new OpenLayers.LonLat( -84.393982 , 33.779219 )
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            map.getProjectionObject() // to Spherical Mercator Projection
+          );
+    var zoom=15;
+    map.setCenter (lonLat, zoom);  
+	//map.zoomToMaxExtent();
+            }
+        </script>
+    </head>
+    <body onload="init()">
+        <h1 id="title">Daniel V Alhadeff, portfolio and CV</h1>
+		
+        <div id="toc">
+		<object type="image/svg+xml" data='PortfolioMap.svg' style='width: 100%; height: 100%;'>
+			<param name="src" value="PortfolioMap.svg" />
+		</object>
+        </div>
+
+        <div id="map" ></div>
+    </body>
+</html>
